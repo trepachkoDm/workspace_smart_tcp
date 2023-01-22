@@ -1,0 +1,8 @@
+[workspace]
+
+members = [
+    "smart_server",
+    "smart_client",
+    "smart_tui",
+    "stp",
+]
