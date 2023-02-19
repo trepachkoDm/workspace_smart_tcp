@@ -10,3 +10,4 @@ stp = { path = "../stp" }
 anyhow = "1.0.51"
 dashmap = "5.4.0"
 chrono = "0.4.19"
+tokio = { version = "1", features = ["full"] }

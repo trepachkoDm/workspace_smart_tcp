@@ -1,8 +1,10 @@
+use async_trait::async_trait;
 use smart_client::SocketClient;
 use std::io;
 
+#[async_trait]
 pub trait State {
-    fn update(&mut self, client: &mut SocketClient) -> Result<Box<dyn State>, anyhow::Error>;
+    async fn update(&mut self, client: &mut SocketClient) -> Result<Box<dyn State>, anyhow::Error>;
 
     fn exit(&self) -> bool {
         false
@@ -11,8 +13,9 @@ pub trait State {
 
 pub struct Main;
 
+#[async_trait]
 impl State for Main {
-    fn update(&mut self, _: &mut SocketClient) -> Result<Box<dyn State>, anyhow::Error> {
+    async fn update(&mut self, _: &mut SocketClient) -> Result<Box<dyn State>, anyhow::Error> {
         println!(
             "Select option:
     1) Swith on
@@ -39,9 +42,10 @@ impl State for Main {
 
 struct SwithOnState;
 
+#[async_trait]
 impl State for SwithOnState {
-    fn update(&mut self, socket: &mut SocketClient) -> Result<Box<dyn State>, anyhow::Error> {
-        let socket_operation_result = socket.switch_on()?;
+    async fn update(&mut self, socket: &mut SocketClient) -> Result<Box<dyn State>, anyhow::Error> {
+        let socket_operation_result = socket.switch_on().await?;
         println!("{}", socket_operation_result);
 
         Ok(Box::new(Main))
@@ -49,9 +53,10 @@ impl State for SwithOnState {
 }
 struct SwithOffState;
 
+#[async_trait]
 impl State for SwithOffState {
-    fn update(&mut self, socket: &mut SocketClient) -> Result<Box<dyn State>, anyhow::Error> {
-        let socket_operation_result = socket.switch_off()?;
+    async fn update(&mut self, socket: &mut SocketClient) -> Result<Box<dyn State>, anyhow::Error> {
+        let socket_operation_result = socket.switch_off().await?;
         println!("{}", socket_operation_result);
 
         Ok(Box::new(Main))
@@ -60,9 +65,10 @@ impl State for SwithOffState {
 
 struct GetStateState;
 
+#[async_trait]
 impl State for GetStateState {
-    fn update(&mut self, socket: &mut SocketClient) -> Result<Box<dyn State>, anyhow::Error> {
-        let socket_operation_result = socket.get_state()?;
+    async fn update(&mut self, socket: &mut SocketClient) -> Result<Box<dyn State>, anyhow::Error> {
+        let socket_operation_result = socket.get_state().await?;
         println!("{}", socket_operation_result);
 
         Ok(Box::new(Main))
@@ -70,9 +76,10 @@ impl State for GetStateState {
 }
 struct GetReportState;
 
+#[async_trait]
 impl State for GetReportState {
-    fn update(&mut self, socket: &mut SocketClient) -> Result<Box<dyn State>, anyhow::Error> {
-        let socket_operation_result = socket.get_report()?;
+    async fn update(&mut self, socket: &mut SocketClient) -> Result<Box<dyn State>, anyhow::Error> {
+        let socket_operation_result = socket.get_report().await?;
         println!("{}", socket_operation_result);
 
         Ok(Box::new(Main))
@@ -81,8 +88,9 @@ impl State for GetReportState {
 
 struct Exit;
 
+#[async_trait]
 impl State for Exit {
-    fn update(&mut self, _: &mut SocketClient) -> Result<Box<dyn State>, anyhow::Error> {
+    async fn update(&mut self, _: &mut SocketClient) -> Result<Box<dyn State>, anyhow::Error> {
         unreachable!()
     }
 

@@ -1,22 +1,24 @@
 use smart_client::SocketClient;
 use state::{Main, State};
-use std::error::Error;
-use std::fs;
+use tokio::fs;
 
 mod state;
 
-fn main() -> Result<(), Box<dyn Error>> {
-    let addr = get_server_addr();
-    let mut client = SocketClient::new(addr)?;
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    let addr = get_server_addr().await;
+    let mut client = SocketClient::new(addr).await?;
 
     let mut state: Box<dyn State> = Box::new(Main);
     while !state.exit() {
-        state = state.update(&mut client)?;
+        state = state.update(&mut client).await?;
     }
 
     Ok(())
 }
 
-fn get_server_addr() -> String {
-    fs::read_to_string("settings/addr").unwrap_or_else(|_| String::from("127.0.0.1:55331"))
+async fn get_server_addr() -> String {
+    fs::read_to_string("settings/addr")
+        .await
+        .unwrap_or_else(|_| String::from("127.0.0.1:55331"))
 }
